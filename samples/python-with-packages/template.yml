@@ -9,7 +9,7 @@ Resources:
       # forced to create a zip-file, containing all relevant data
       CodeUri: bundle.zip
       Handler: example.schedule.lambda_sandbox_down_handler
-      Runtime: python3.6
+      Runtime: python2.7
       Environment:
         Variables:
           AWS_ENVIRONMENT: sandbox

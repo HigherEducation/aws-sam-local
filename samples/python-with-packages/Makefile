@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-PY_VERSION := 3.6
+PY_VERSION := 2.7
 
 export PYTHONUNBUFFERED := 1
 
@@ -13,7 +13,7 @@ VENV_DIR := $(BASE)/.venv
 export PATH := var:$(PATH):$(VENV_DIR)/bin
 
 PYTHON := $(shell /usr/bin/which python$(PY_VERSION))
-VIRTUALENV := $(PYTHON) -m venv
+VIRTUALENV := $(PYTHON) -m virtualenv
 ZIP_FILE := $(BASE)/bundle.zip
 
 .DEFAULT_GOAL := build
@@ -24,7 +24,7 @@ build:
 	$(VIRTUALENV) "$(VENV_DIR)"
 	mkdir -p "$(VENV_DIR)/lib64/python$(PY_VERSION)/site-packages"
 	touch "$(VENV_DIR)/lib64/python$(PY_VERSION)/site-packages/file"
-	"$(VENV_DIR)/bin/pip$(PY_VERSION)" \
+	"pip" \
 		--isolated \
 		--disable-pip-version-check \
 		install --no-binary :all: -Ur requirements.txt
@@ -38,7 +38,7 @@ bundle.local:
 		&& zip -r9 "$(ZIP_FILE)" *
 
 bundle:
-	docker run -v $$PWD:/var/task -it lambci/lambda:build-python3.6 /bin/bash -c 'make clean build bundle.local'
+	docker run -v $$PWD:/var/task -it lambci/lambda:build-python$(PY_VERSION) /bin/bash -c 'make clean build bundle.local'
 
 package:
 	sam package \
@@ -64,4 +64,3 @@ release:
 
 clean:
 	rm -rf "$(VENV_DIR)" "$(BASE)/var" "$(BASE)/__pycache__" "$(ZIP_FILE)"
-
